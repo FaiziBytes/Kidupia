@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'Jost';
+  src: url('./fonts/Jost-VariableFont_wght.ttf') format('truetype');
+}
+
+.width{
+  width: 400px;
+}
+
+@media (max-width: 1184px) {
+.width{
+  width: 280px;
+}
+}
+
+@media (max-width: 950px) {
+.activity{
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+}
+
+@media (max-width: 400px) {
+.brand{
+  display: grid;
+  grid-template-columns: 1fr;
+  justify-content: center;
+  justify-items: center;
+  gap: 20px;
+}
+}

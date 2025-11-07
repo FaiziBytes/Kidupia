@@ -1,11 +1,11 @@
-import ThirtyOff from "../HomePageComponents/30";
-import BestSelling from "../HomePageComponents/bestSelling";
-import Blog from "../HomePageComponents/blog";
-import Brand from "../HomePageComponents/brand";
-import Testimonials from "../HomePageComponents/Testimonials";
-import Categories from "../HomePageComponents/categories";
-import Activities from "../HomePageComponents/Activities";
-import Hero from "../HomePageComponents/Hero";
+import ThirtyOff from "../components/30"
+import BestSelling from "../components/bestSelling"
+import Blog from "../components/blog"
+import Brand from "../components/brand"
+import Testimonials from "../components/Testimonials";
+import Categories from "../components/categories";
+import Activities from "../components/Activities";
+import Hero from "../components/Hero";
 const Home = () => {
   return (
     <div className="font-[]">

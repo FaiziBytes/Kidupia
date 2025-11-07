@@ -19,7 +19,7 @@
 
 
 import { Outlet } from "react-router-dom";
-import Footer from "../HomePageComponents/Footer";
+import Footer from "../components/Footer";
 import Navbar from "../HomePageComponents/Navbar";
 import Navbar2 from "../HomePageComponents/Navbar2";
 import Newsletter from "../HomePageComponents/newsletter";

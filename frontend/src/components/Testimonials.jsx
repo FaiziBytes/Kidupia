@@ -1,5 +1,5 @@
 
-import Review from "./Testimonials/Client";
+import Review from "../components/Review";
 
 const Testimonials = () => {
       return (

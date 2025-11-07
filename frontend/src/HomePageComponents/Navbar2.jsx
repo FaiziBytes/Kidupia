@@ -81,7 +81,7 @@ const Navbar2 = () => {
             className="flex items-center gap-1 cursor-pointer relative"
             onMouseEnter={() => setActiveMenu("cat")}
             onMouseLeave={() => setActiveMenu(null)}
-            onClick={() => setSelectedMenu("categories")}
+            // onClick={() => setSelectedMenu("categories")}
           >
             <p     >
               Categories
@@ -97,7 +97,7 @@ const Navbar2 = () => {
             className="flex items-center gap-1 cursor-pointer relative"
             onMouseEnter={() => setActiveMenu("product")}
             onMouseLeave={() => setActiveMenu(null)}
-            onClick={() => setSelectedMenu("products")}
+            // onClick={() => setSelectedMenu("products")}
           >
             <p>
               Products
@@ -109,7 +109,7 @@ const Navbar2 = () => {
           <div
             onMouseEnter={() => setActiveMenu("topdeals")}
             onMouseLeave={() => setActiveMenu(null)}
-            onClick={() => setSelectedMenu("topdeals")}
+            // onClick={() => setSelectedMenu("topdeals")}
             className="flex items-center gap-2 hover:cursor-pointer"
           >
             <p>

@@ -6,22 +6,26 @@ import { FaRegUser } from "react-icons/fa6";
 import { FaRegHeart } from "react-icons/fa";
 import { LiaLockSolid } from "react-icons/lia";
 import Sidebar from "./sidebar";
-import Register from "../auth-page-components/register";
-import Auth from "../auth/auth";
+import { Link } from "react-router-dom";
+import CartSideBar from "../cart/cart";
+
 
 const Navbar = () => {
   // sidebar open/close control
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  return (
-    <div className="relative">
+  const [isCartSidebarOpen, setIsCartSidebarOpen] = useState(false);
+  const [color,setColor] = useState("black")
+  const[colorForAccount,setColorForAccount] = useState("black");
+  const[lockColor,setLockColor] = useState("black");
+   return (
+    <div className="relative z-1000">
       {/* Sidebar Component */}
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-
+      <CartSideBar isOpen={isCartSidebarOpen} onClose={()=> setIsCartSidebarOpen(false)}/>  
       {/* Background Overlay */}
       {isSidebarOpen && (
         <div
-          className="fixed top-0 left-0 w-full h-full bg-opacity-40 z-40"
+          className="fixed top-0 left-0 w-full h-full bg-opacity-40 z-140"
       //     onClick={() => setIsSidebarOpen(false)}
         ></div>
       )}
@@ -36,7 +40,7 @@ const Navbar = () => {
               className="lg:hidden cursor-pointer"
               onClick={() => setIsSidebarOpen(true)} // open sidebar on click
             />
-            <img className="w-40" src={logo} alt="this is an image" />
+           <Link to="/"><img className="w-40" src={logo} alt="this is an image" /></Link>
           </div>
 
           {/* Search bar (visible only on large screens) */}
@@ -70,21 +74,39 @@ const Navbar = () => {
             </div>
 
             {/* User account */}
-            <div className="lg:flex items-center gap-3 hidden">
-              <FaRegUser className="text-[27px]" />
+            <Link to="/Home/Account">
+            <div
+            onMouseEnter={()=> setColorForAccount("#E94A85")}
+            onMouseLeave={()=> setColorForAccount("black")}
+            className="lg:flex items-center gap-3 hidden hover:cursor-pointer">
+              <FaRegUser
+              style={{color:colorForAccount}}
+              className="text-[27px]" />
               <div>
                 <p>Sign In</p>
-                <p className="leading-3 mb-1">Account</p>
+                <p 
+                style={{color:colorForAccount}}
+                className="leading-3 mb-1">Account</p>
               </div>
             </div>
-
+            </Link>
             {/* Wishlist */}
-            <FaRegHeart className="text-[25px]" />
+            <FaRegHeart 
+            style={{color:color}}
+            onMouseEnter={()=> setColor("#E94A85")}
+            onMouseLeave={()=>setColor("black")}
+            className="text-[25px] hover:cursor-pointer" />
 
             {/* Cart */}
-            <div className="flex items-center">
-              <LiaLockSolid className="text-[33px]" />
-              <div className="hidden lg:visible">
+            <div 
+            onClick={()=> setIsCartSidebarOpen(true)}
+            onMouseEnter={()=> setLockColor("#E94A85")}
+            onMouseLeave={()=> setLockColor("black")}
+            className="flex items-center hover:cursor-pointer">
+              <LiaLockSolid 
+              style={{color:lockColor}}
+              className="text-[33px]" />
+              <div className="hidden md:block">
                 <p>$0.00</p>
                 <p className="leading-3.5">My Cart</p>
               </div>

@@ -13,7 +13,6 @@ const Auth = () => {
           <h1 className="text-2xl sm:text-3xl font-semibold mb-8 text-center text-gray-800">
             Login
           </h1>
-
           <form className="space-y-6">
             {/* Username */}
             <div>
@@ -24,8 +23,7 @@ const Auth = () => {
               <input
                 type="text"
                 className="w-full h-10 px-3 border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-[#E94A85] focus:border-[#E94A85] transition"
-                required
-              />
+                required/>
             </div>
 
             {/* Password */}

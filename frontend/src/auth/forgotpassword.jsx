@@ -2,6 +2,7 @@ import React from "react";
 import BreadcrumbBanner from "../components/breadcrumb";
 
 // ✅ LostPassword.jsx — clean, left-aligned layout matching your screenshot
+
 export default function LostPassword() {
   const handleReset = (event) => {
     event.preventDefault();
@@ -18,7 +19,7 @@ export default function LostPassword() {
 
   return (
       <div>
-            <BreadcrumbBanner/>
+      <BreadcrumbBanner/>
     <div className="w-full bg-white py-16">
       <div className="max-w-6xl mx-auto px-6">
         <div className="w-full lg:w-3/4 xl:w-2/3 text-left">

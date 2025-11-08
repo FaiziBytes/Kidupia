@@ -10,7 +10,7 @@ const Layout = () => {
     <>
       <Navbar />
       <Navbar2 />
-      <Outlet />         {/* 👈 This is where Home or Shop will appear */}
+      <Outlet />         
       <Newsletter />
       <Footer />
     </>

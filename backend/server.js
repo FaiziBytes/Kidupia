@@ -6,12 +6,11 @@ import dotenv from "dotenv";
 import connectDb from "./config/connection.js";
 // 
 // Route imports
-import userRoutes from "./routes/user.routes.js";
+// import userRoutes from "./routes/user.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import cartRoutes from "./routes/cart.routes.js";
 import reviewRoutes from "./routes/review.routes.js";
-import userRouter from "./routes/user.route.js"
 import orderRoutes from "./routes/order.routes.js";
 
 
@@ -25,7 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 
 // 🔹 Routes
-app.use("/api/users", userRoutes);
+// app.use("/api/users", userRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);

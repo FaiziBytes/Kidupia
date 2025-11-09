@@ -5,18 +5,18 @@ import {
   getProductById,
 } from "../controllers/product.controller.js";
 import {
-  AuthorizeUser,
-  AuthorizeRole,
-} from "../middlewares/authorization.middleware.js";
+  isAuthenticated,
+  AuthorizeRole
+} from "../middlewares/isAuthenticated.js";
 
 const router = express.Router();
 
 // Public routes
 router.get("/", getAllProducts);
-router.get("/category/:categoryId", getProductById);
-router.post("/", createProduct);
+router.get("/get/product/:Id", getProductById);
+// router.post("/", createProduct);
 
 // Admin-only routes
-// router.post("/", AuthorizeUser, AuthorizeRole("admin"), createProduct);
+router.post("/create/product", isAuthenticated, AuthorizeRole("admin"), createProduct);
 
 export default router;

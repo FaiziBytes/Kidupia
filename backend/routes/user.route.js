@@ -11,4 +11,23 @@ router.post("/logout",isAuthenticated,logoutUser)
 router.post("/forgot-password",forgotPassword);
 router.post("/verify-otp/:email",verifyOTP);
 router.post("/change-password/:email",changePassword);
+router.get(
+  "/dashboard",
+  isAuthenticated,
+  AuthorizeRole("user", "admin"), // Only logged-in users
+  (req, res) => {
+    res.json({
+      message: `Welcome ${req.user.email}! You are a ${req.user.role}`,
+    });
+  }
+);
+
+router.get(
+  "/admin-panel",
+  isAuthenticated,
+  AuthorizeRole("admin"), // Only admins
+  (req, res) => {
+    res.json({ message: "Welcome Admin Panel!" });
+  }
+);
 export default router;

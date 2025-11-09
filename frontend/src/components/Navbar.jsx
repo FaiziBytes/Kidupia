@@ -98,7 +98,10 @@ const Navbar = () => {
             onMouseLeave={() => setLockColor("black")}
             className="flex items-center cursor-pointer"
           >
-            <LiaLockSolid style={{ color: lockColor }} className="text-2xl" />
+            <LiaLockSolid style={{ color: lockColor}}
+            size={25} 
+            className="text-[25px]"
+            />
             <div className="hidden md:block">
               <p>$0.00</p>
               <p className="leading-3.5">My Cart</p>

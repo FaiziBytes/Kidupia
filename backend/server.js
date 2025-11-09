@@ -1,30 +1,47 @@
+// server.js
 import express from "express";
 import cors from "cors";
-import bodyParser from "body-parser";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import connectDb from "./config/connection.js";
-import Router from "./routes/router.js";
-const app = express();
+
+// Route imports
+import userRoutes from "./routes/user.routes.js";
+import categoryRoutes from "./routes/category.routes.js";
+import productRoutes from "./routes/product.routes.js";
+import cartRoutes from "./routes/cart.routes.js";
+import reviewRoutes from "./routes/review.routes.js";
+import orderRoutes from "./routes/order.routes.js";
+
+
 dotenv.config();
-// middlewares
+const app = express();
+
+// 🔹 Middlewares
 app.use(cors());
 app.use(express.json());
-app.use(bodyParser.json());
-app.use(express.urlencoded({extended:true}));
-app.use(bodyParser.urlencoded({extended:true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
-// main router of the app
-app.use("/api/v1",Router);
-// database connection in the app
-connectDb();
 
-app.get("/",(req,res)=>{
-      res.send("server game is on");
-})
+// 🔹 Routes
+app.use("/api/users", userRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/orders", orderRoutes);
 
-const port = process.env.PORT || 5000;
-
-app.listen(port,()=>{
-      console.log(`server is running on the ${port}`);
+// 🔹 Test route
+app.get("/", (req, res) => {
+  res.send("Server is running!");
 });
+
+// 🔹 Connect to DB and start server
+connectDb()
+  .then(() => {
+    const port = process.env.PORT || 5000;
+    app.listen(port, () => console.log(`Server running on port ${port}`));
+  })
+  .catch((err) => {
+    console.error("Failed to connect to DB:", err);
+  });

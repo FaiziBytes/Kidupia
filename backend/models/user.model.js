@@ -32,6 +32,9 @@ const userSchema = new mongoose.Schema({
       otpExpiry:{
             type:Date,
             default:null
+      },
+      role:{
+            
       }
 },{
       timestamps:true

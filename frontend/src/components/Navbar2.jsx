@@ -4,11 +4,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import Product from "../Products/Product";
 import Topdeals from "../Top-Deals/topdeals";
 import { Link } from "react-router-dom";
-
+import TodaySaleSidebar from "./today-sale";
+import { MdLocalOffer } from "react-icons/md";
 const Navbar2 = () => {
   const [activeMenu, setActiveMenu] = useState(null);
   const [selectedMenu, setSelectedMenu] = useState("home"); // 👈 keeps track of which link is active
-
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const shopItems = [
     {
       title: "Product Types",
@@ -50,7 +51,7 @@ const Navbar2 = () => {
 
   return (
     <div className="hidden lg:block relative">
-      <nav className="px-5 py-5 flex items-center justify-between text-[18px] bg-white relative z-50">
+      <nav className="px-5 py-5 flex items-center justify-between text-[18px] bg-white relative z-0">
         <div className="flex items-center gap-12">
           {/* 🏠 Home */}
           <Link to="/">
@@ -81,7 +82,7 @@ const Navbar2 = () => {
             className="flex items-center gap-1 cursor-pointer relative"
             onMouseEnter={() => setActiveMenu("cat")}
             onMouseLeave={() => setActiveMenu(null)}
-            // onClick={() => setSelectedMenu("categories")}
+          // onClick={() => setSelectedMenu("categories")}
           >
             <p     >
               Categories
@@ -97,7 +98,7 @@ const Navbar2 = () => {
             className="flex items-center gap-1 cursor-pointer relative"
             onMouseEnter={() => setActiveMenu("product")}
             onMouseLeave={() => setActiveMenu(null)}
-            // onClick={() => setSelectedMenu("products")}
+          // onClick={() => setSelectedMenu("products")}
           >
             <p>
               Products
@@ -119,7 +120,10 @@ const Navbar2 = () => {
           </div>
         </div>
 
-        <div>
+        <div
+          className="hover:cursor-pointer flex items-center gap-1"
+          onClick={() => setIsSidebarOpen(true)}>
+            <MdLocalOffer />
           <h1>Today's Sale</h1>
         </div>
       </nav>
@@ -174,6 +178,12 @@ const Navbar2 = () => {
       >
         <Topdeals showDropdownForTopDeals={activeMenu === "topdeals"} />
       </div>
+      {/* making todays's sale page*/}
+
+      <TodaySaleSidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+      />
     </div>
   );
 };

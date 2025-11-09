@@ -22,7 +22,7 @@ const BreadcrumbBanner = () => {
         </p>
 
         {/* Page title */}
-        <h1 className="text-xl sm:text-2xl md:text-4xl font-semibold">
+        <h1 className="text-xl sm:text-2xl md:text-4xl font-medium">
           {pageTitle}
         </h1>
       </div>

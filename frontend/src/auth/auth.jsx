@@ -1,128 +1,225 @@
+import React, { useState } from "react";
+import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
 import BreadcrumbBanner from "../components/breadcrumb";
-import { Link } from "react-router-dom";
+
 const Auth = () => {
+  const navigate = useNavigate();
+
+  // 🔹 Login states
+  const [loginData, setLoginData] = useState({
+    email: "",
+    password: "",
+  });
+
+  // 🔹 Register states
+  const [registerData, setRegisterData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+
+  // 🔹 UI feedback
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [registerLoading, setRegisterLoading] = useState(false);
+  const [message, setMessage] = useState(null);
+
+  // ✅ Handle input change for both forms
+  const handleChange = (e, type) => {
+    const { name, value } = e.target;
+    if (type === "login") {
+      setLoginData({ ...loginData, [name]: value });
+    } else {
+      setRegisterData({ ...registerData, [name]: value });
+    }
+  };
+
+  // ✅ Login submit
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoginLoading(true);
+    setMessage(null);
+
+    try {
+      const res = await axios.post("http://localhost:5000/api/auth/login", loginData, {
+        withCredentials: true,
+      });
+
+      if (res.data.success) {
+        setMessage({ type: "success", text: res.data.message || "Login successful!" });
+        localStorage.setItem("token", res.data.token);
+        navigate("/admin/dashboard");
+      } else {
+        setMessage({ type: "error", text: res.data.message || "Login failed!" });
+      }
+    } catch (error) {
+      setMessage({
+        type: "error",
+        text: error.response?.data?.message || "Server error occurred!",
+      });
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
+  // ✅ Register submit
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setRegisterLoading(true);
+    setMessage(null);
+
+    try {
+      const res = await axios.post("http://localhost:3000/user/register", registerData);
+
+      if (res.data.success) {
+        setMessage({ type: "success", text: res.data.message || "Registered successfully!" });
+        setRegisterData({ username: "", email: "", password: "" });
+      } else {
+        setMessage({ type: "error", text: res.data.message || "Registration failed!" });
+      }
+    } catch (error) {
+      setMessage({
+        type: "error",
+        text: error.response?.data?.message || "Server error occurred!",
+      });
+    } finally {
+      setRegisterLoading(false);
+    }
+  };
+
   return (
     <div>
       <BreadcrumbBanner />
 
-      {/* Outer container with responsive layout */}
       <div className="px-4 sm:px-8 py-10 flex flex-col lg:flex-row justify-center items-center lg:items-start gap-8 lg:gap-16 bg-gray-50 min-h-screen">
-        
-        {/* Login Section */}
+
+        {/* 🔹 Login Section */}
         <div className="w-full max-w-md bg-white shadow-lg rounded-xl p-6 sm:p-8 border border-gray-200">
           <h1 className="text-2xl sm:text-3xl font-semibold mb-8 text-center text-gray-800">
             Login
           </h1>
-          <form className="space-y-6">
-            {/* Username */}
-            <div>
-              <label className="block text-gray-700 font-medium mb-2">
-                Username or Email Address{" "}
-                <span className="text-[#E94A85] font-bold">*</span>
-              </label>
-              <input
-                type="text"
-                className="w-full h-10 px-3 border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-[#E94A85] focus:border-[#E94A85] transition"
-                required/>
-            </div>
 
-            {/* Password */}
+          <form className="space-y-6" onSubmit={handleLogin}>
             <div>
               <label className="block text-gray-700 font-medium mb-2">
-                Password{" "}
-                <span className="text-[#E94A85] font-bold">*</span>
+                Email Address <span className="text-[#E94A85] font-bold">*</span>
               </label>
               <input
-                type="password"
+                type="email"
+                name="email"
+                value={loginData.email}
+                onChange={(e) => handleChange(e, "login")}
                 className="w-full h-10 px-3 border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-[#E94A85] focus:border-[#E94A85] transition"
                 required
               />
             </div>
 
-            {/* Remember + Forgot */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">
+                Password <span className="text-[#E94A85] font-bold">*</span>
+              </label>
+              <input
+                type="password"
+                name="password"
+                value={loginData.password}
+                onChange={(e) => handleChange(e, "login")}
+                className="w-full h-10 px-3 border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-[#E94A85] focus:border-[#E94A85] transition"
+                required
+              />
+            </div>
+
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
               <label className="flex items-center gap-2 text-gray-700 text-sm">
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 accent-[#E94A85] cursor-pointer"
-                />
+                <input type="checkbox" className="w-4 h-4 accent-[#E94A85]" />
                 <span>Remember me</span>
               </label>
               <Link to="/Account/Forgot/Password">
-              <p
-                
-                className="text-[#E94A85] text-sm font-medium hover:underline"
-              >
-                Forgot password?
-              </p>
+                <p className="text-[#E94A85] text-sm font-medium hover:underline">
+                  Forgot password?
+                </p>
               </Link>
             </div>
 
-            {/* Button */}
             <button
               type="submit"
-              className="w-full mt-4 bg-[#E94A85] hover:bg-[#d63d77] text-white font-semibold py-2.5 rounded-md transition">
-              LOG IN
+              disabled={loginLoading}
+              className="w-full mt-4 bg-[#E94A85] hover:bg-[#d63d77] text-white font-semibold py-2.5 rounded-md transition disabled:opacity-70"
+            >
+              {loginLoading ? "Logging in..." : "LOG IN"}
             </button>
           </form>
         </div>
 
-        {/* Register Section */}
+        {/* 🔹 Register Section */}
         <div className="w-full max-w-md bg-white shadow-lg rounded-xl p-6 sm:p-8 border border-gray-200">
           <h1 className="text-2xl sm:text-3xl font-semibold mb-8 text-center text-gray-800">
             Register
           </h1>
 
-          <form className="space-y-6">
-            {/* Username */}
+          <form className="space-y-6" onSubmit={handleRegister}>
             <div>
               <label className="block text-gray-700 font-medium mb-2">
-                Username{" "}
-                <span className="text-[#E94A85] font-bold">*</span>
+                Username <span className="text-[#E94A85] font-bold">*</span>
               </label>
               <input
                 type="text"
+                name="username"
+                value={registerData.username}
+                onChange={(e) => handleChange(e, "register")}
                 className="w-full h-10 px-3 border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-[#E94A85] focus:border-[#E94A85] transition"
                 required
               />
             </div>
 
-            {/* Email */}
             <div>
               <label className="block text-gray-700 font-medium mb-2">
-                Email Address{" "}
-                <span className="text-[#E94A85] font-bold">*</span>
+                Email Address <span className="text-[#E94A85] font-bold">*</span>
               </label>
               <input
                 type="email"
+                name="email"
+                value={registerData.email}
+                onChange={(e) => handleChange(e, "register")}
                 className="w-full h-10 px-3 border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-[#E94A85] focus:border-[#E94A85] transition"
                 required
               />
             </div>
 
-            {/* Password */}
             <div>
               <label className="block text-gray-700 font-medium mb-2">
-                Password{" "}
-                <span className="text-[#E94A85] font-bold">*</span>
+                Password <span className="text-[#E94A85] font-bold">*</span>
               </label>
               <input
                 type="password"
+                name="password"
+                value={registerData.password}
+                onChange={(e) => handleChange(e, "register")}
                 className="w-full h-10 px-3 border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-[#E94A85] focus:border-[#E94A85] transition"
                 required
               />
             </div>
 
-            {/* Button */}
             <button
               type="submit"
-              className="w-full mt-4 bg-[#E94A85] hover:bg-[#d63d77] text-white font-semibold py-2.5 rounded-md transition"
+              disabled={registerLoading}
+              className="w-full mt-4 bg-[#E94A85] hover:bg-[#d63d77] text-white font-semibold py-2.5 rounded-md transition disabled:opacity-70"
             >
-              REGISTER
+              {registerLoading ? "Registering..." : "REGISTER"}
             </button>
           </form>
         </div>
       </div>
+
+      {/* 🔹 Global Message */}
+      {message && (
+        <div
+          className={`fixed bottom-6 right-6 px-4 py-3 rounded-lg shadow-lg text-white ${
+            message.type === "success" ? "bg-green-500" : "bg-red-500"
+          }`}
+        >
+          {message.text}
+        </div>
+      )}
     </div>
   );
 };

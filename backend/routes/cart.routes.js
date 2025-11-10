@@ -6,12 +6,15 @@ import {
   getUserCart,
   clearCart,
 } from "../controllers/cart.controller.js";
-import { AuthorizeUser } from "../middlewares/authorization.middleware.js";
+import {
+  isAuthenticated,
+  AuthorizeRole
+} from "../middlewares/isAuthenticated.js";
 
 const router = express.Router();
 
 // All routes require authentication
-router.use(AuthorizeUser);
+router.use(isAuthenticated);
 
 router.get("/:userId", getUserCart);
 router.post("/add", addToCart);

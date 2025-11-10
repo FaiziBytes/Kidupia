@@ -7,7 +7,7 @@ import sessionModel from "../models/session.model.js";
 import { sendOtpMail } from "../utlis/sentOtp.js";
 export const registerUser = async (req, res) => {
       try {
-            let { username, email, password } = req.body;
+            let { username, email, password,role} = req.body;
             if (!username || !email || !password) {
                   return res.status(400).json({
                         success: false,
@@ -22,7 +22,7 @@ export const registerUser = async (req, res) => {
                   })
             }
             let hashedPassword = await bcrypt.hash(password, 10);
-            let newUser = await UserModel.create({ username, email, password: hashedPassword });
+            let newUser = await UserModel.create({ username, email, password: hashedPassword,role });
 
             // Generate token
             let token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: "10m" })

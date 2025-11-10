@@ -48,7 +48,7 @@ const Auth = () => {
       if (res.data.success) {
         setMessage({ type: "success", text: res.data.message || "Login successful!" });
         localStorage.setItem("token", res.data.token);
-        navigate("/admin/dashboard");
+       
       } else {
         setMessage({ type: "error", text: res.data.message || "Login failed!" });
       }
@@ -74,6 +74,7 @@ const Auth = () => {
       if (res.data.success) {
         setMessage({ type: "success", text: res.data.message || "Registered successfully!" });
         setRegisterData({ username: "", email: "", password: "" });
+        navigate("/verify");
       } else {
         setMessage({ type: "error", text: res.data.message || "Registration failed!" });
       }

@@ -41,14 +41,15 @@ const Auth = () => {
     setMessage(null);
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", loginData, {
+      const res = await axios.post("http://localhost:3000/user/login", loginData, {
         withCredentials: true,
       });
 
       if (res.data.success) {
         setMessage({ type: "success", text: res.data.message || "Login successful!" });
+        navigate("/");
         localStorage.setItem("token", res.data.token);
-       
+        
       } else {
         setMessage({ type: "error", text: res.data.message || "Login failed!" });
       }

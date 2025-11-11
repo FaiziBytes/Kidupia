@@ -8,6 +8,7 @@ import casualshoes4 from "../images/casual-shoes-04-11.jpg";
 import { FaShieldAlt } from "react-icons/fa";
 import { FaCoins } from "react-icons/fa6";
 import { FaTruckFast } from "react-icons/fa6";
+import ProductDescription from './productDescription';
 
 
 const ProductByid = () => {
@@ -181,6 +182,18 @@ const ProductByid = () => {
           <FaTruckFast />
           <p> free shipping </p>
         </div>
+      </div>
+      
+      <div className='flex justify-center items-center border-1 border-[#E5E5E5] mt-8 mx-3'>
+        <div className='flex justify-center items-center gap-10 text-[22px] font-medium py-3'>
+          <h1 className='hover:cursor-pointer'>Description</h1>
+          <h1 className='hover:cursor-pointer'>Additional Information</h1>
+          <h1 className='hover:cursor-pointer'>Reviews</h1>
+          <h1 className='hover:cursor-pointer'>Shipping & Return</h1>
+        </div>
+      </div>
+      <div className='px-4 py-10 border-1 border-[#E5E5E5] mx-3'>
+        <ProductDescription/>
       </div>
     </div>
   );

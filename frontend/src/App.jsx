@@ -12,8 +12,9 @@ import Users from "./Admin/Users";
 import Categories from "./Admin/Categories";
 import Products from "./Admin/Products";
 import Orders from "./Admin/Orders";
-import EmailVerificationNotice from "./components/verify.jsx";
+import EmailVerificationNotice from "./auth/verify.jsx";
 import ProductByid from "./Products/productByid.jsx";
+import VerifyGmail from "./auth/verifyGmail.jsx";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
 
         {/* 🔹 Email verification */}
         <Route path="/verify" element={<EmailVerificationNotice />} />
+         <Route path="/verify/:token" element={<VerifyGmail/>} />
 
         {/* 🧩 Admin Routes */}
         <Route path="/admin" element={<AdminLayout />}>

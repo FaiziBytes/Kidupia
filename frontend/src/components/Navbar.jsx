@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { GrMenu } from "react-icons/gr";
 import logo from "../assets/logo.svg";
 import { IoSearch } from "react-icons/io5";
@@ -8,14 +8,14 @@ import { LiaLockSolid } from "react-icons/lia";
 import Sidebar from "./sidebar";
 import CartSideBar from "../cart/cart";
 import { Link } from "react-router-dom";
-
+import { UserContext } from "../contexts/createUserContext";
 const Navbar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCartSidebarOpen, setIsCartSidebarOpen] = useState(false);
   const [color, setColor] = useState("black");
   const [colorForAccount, setColorForAccount] = useState("black");
   const [lockColor, setLockColor] = useState("black");
-
+  const {user} = useContext(UserContext);
   return (
     <div className="relative z-50">
       {/* Sidebar Component */}
@@ -103,7 +103,9 @@ const Navbar = () => {
             className="text-[25px]"
             />
             <div className="hidden md:block">
-              <p>$0.00</p>
+              {
+                user? <p>faizan</p>: <p>$0.00</p>
+              }             
               <p className="leading-3.5">My Cart</p>
             </div>
           </div>

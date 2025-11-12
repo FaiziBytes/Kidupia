@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import BreadcrumbBanner from "../components/breadcrumb";
+import { UserContext } from "../contexts/createUserContext";
 
 const Auth = () => {
   const navigate = useNavigate();
+  const { user, setUser } = useContext(UserContext);
 
   // 🔹 Login states
   const [loginData, setLoginData] = useState({
@@ -23,6 +25,14 @@ const Auth = () => {
   const [loginLoading, setLoginLoading] = useState(false);
   const [registerLoading, setRegisterLoading] = useState(false);
   const [message, setMessage] = useState(null);
+
+  // ✅ Auto-hide message after 4 seconds
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => setMessage(null), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
 
   // ✅ Handle input change for both forms
   const handleChange = (e, type) => {
@@ -47,9 +57,14 @@ const Auth = () => {
 
       if (res.data.success) {
         setMessage({ type: "success", text: res.data.message || "Login successful!" });
-        navigate("/");
-        localStorage.setItem("token", res.data.token);
-        
+
+        // Save token & user
+        localStorage.setItem("token", JSON.stringify(res.data.accessToken));
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+        setUser(res.data.user);
+
+        // Navigate after slight delay for better UX
+        setTimeout(() => navigate("/"), 1000);
       } else {
         setMessage({ type: "error", text: res.data.message || "Login failed!" });
       }
@@ -75,7 +90,9 @@ const Auth = () => {
       if (res.data.success) {
         setMessage({ type: "success", text: res.data.message || "Registered successfully!" });
         setRegisterData({ username: "", email: "", password: "" });
-        navigate("/verify");
+
+        // Navigate to verification page
+        setTimeout(() => navigate("/verify"), 1000);
       } else {
         setMessage({ type: "error", text: res.data.message || "Registration failed!" });
       }

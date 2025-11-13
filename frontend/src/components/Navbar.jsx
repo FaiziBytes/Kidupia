@@ -1,54 +1,105 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { GrMenu } from "react-icons/gr";
-import logo from "../assets/logo.svg";
 import { IoSearch } from "react-icons/io5";
-import { FaRegUser } from "react-icons/fa6";
-import { FaRegHeart } from "react-icons/fa";
+import { FaRegUser, FaRegHeart } from "react-icons/fa";
 import { LiaLockSolid } from "react-icons/lia";
+import { Link, useNavigate } from "react-router-dom";
+import logo from "../assets/logo.svg";
 import Sidebar from "./sidebar";
 import CartSideBar from "../cart/cart";
-import { Link } from "react-router-dom";
 import { UserContext } from "../contexts/createUserContext";
+import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const Navbar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCartSidebarOpen, setIsCartSidebarOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [color, setColor] = useState("black");
   const [colorForAccount, setColorForAccount] = useState("black");
   const [lockColor, setLockColor] = useState("black");
-  const {user} = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
+
+  const navigate = useNavigate();
+  const dropdownRef = useRef(null);
+
+  // ✅ Load user and token from localStorage
+  const [token, setToken] = useState(null);
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token"); // token stored as plain string
+    setToken(storedToken || null);
+
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) setUser(JSON.parse(storedUser));
+  }, [setUser]);
+
+  // ✅ Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // ✅ Logout user
+  const handleLogout = async () => {
+    const storedToken = localStorage.getItem("token");
+    if (!storedToken) {
+      toast.error("User not logged in or token missing");
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        "http://localhost:3000/user/logout",
+        {}, // no body needed
+        {
+          headers: {
+            Authorization: `Bearer ${storedToken}`, // send token exactly
+          },
+        }
+      );
+
+      if (res.data.success) {
+        toast.success(res.data.message || "Logout successful!");
+      }
+
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      setUser(null);
+      setDropdownOpen(false);
+      setToken(null);
+      navigate("/");
+    } catch (error) {
+      console.error("Logout error:", error.response?.data || error.message);
+      toast.error(
+        error.response?.data?.message || "Logout failed. Please try again."
+      );
+    }
+  };
+
   return (
     <div className="relative z-50">
-      {/* Sidebar Component */}
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
       <CartSideBar
         isOpen={isCartSidebarOpen}
         onClose={() => setIsCartSidebarOpen(false)}
       />
 
-      {/* Background Overlay */}
-      {isSidebarOpen && (
-        <div
-          className="fixed top-0 left-0 w-full h-full bg-opacity-40 z-40"
-          onClick={() => setIsSidebarOpen(false)}
-        ></div>
-      )}
-
-      {/* Navbar */}
-      <nav className="flex items-center justify-between px-4 py-4 gap-5 lg:border-b border-[#DEDEDE]">
+      <nav className="flex items-center justify-between px-4 py-4 gap-5 lg:border-b border-[#DEDEDE] bg-white">
         <div className="flex gap-4 items-center">
-          {/* Mobile Menu Icon */}
           <GrMenu
             size={24}
-            className="lg:hidden cursor-pointer relative z-50"
+            className="lg:hidden cursor-pointer"
             onClick={() => setIsSidebarOpen(true)}
           />
-
-          {/* Logo */}
           <Link to="/">
             <img src={logo} alt="Logo" className="w-40" />
           </Link>
-
-          {/* Search bar (large screens only) */}
           <div className="hidden lg:flex items-center bg-[#F5F5F5] h-11 rounded">
             <div className="px-4 font-normal">All Categories</div>
             <div className="h-7 border-l border-[#E5E5E5] mx-2"></div>
@@ -61,56 +112,89 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Right-side icons */}
         <div className="flex items-center gap-3 px-4">
-          {/* Mobile search icon */}
           <IoSearch className="text-[25px] lg:hidden cursor-pointer" />
 
-          {/* User account */}
-          <Link to="/Home/Account">
+          <div className="relative hidden lg:block" ref={dropdownRef}>
             <div
+              onClick={() => {
+                if (user) setDropdownOpen(!dropdownOpen);
+                else navigate("/Home/Account");
+              }}
               onMouseEnter={() => setColorForAccount("#E94A85")}
               onMouseLeave={() => setColorForAccount("black")}
-              className="hidden lg:flex items-center gap-3 cursor-pointer"
+              className="flex items-center gap-3 cursor-pointer select-none"
             >
               <FaRegUser style={{ color: colorForAccount }} className="text-2xl" />
               <div>
-                <p>Sign In</p>
-                <p style={{ color: colorForAccount }} className="leading-3 mb-1">
-                  Account
-                </p>
+                {user ? <p>{user.username}</p> : <p>Sign In</p>}
+                {user ? (
+                  <p style={{ color: colorForAccount }} className="leading-3.5 text-sm">
+                    My Account
+                  </p>
+                ) : (
+                  <p className="leading-3.5 text-sm">Welcome Back!</p>
+                )}
               </div>
             </div>
-          </Link>
 
-          {/* Wishlist */}
+            {user && dropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg border border-gray-100 py-2">
+                <Link
+                  to="/profile"
+                  className="block px-4 py-2 text-sm hover:bg-gray-100"
+                  onClick={() => setDropdownOpen(false)}
+                >
+                  Profile
+                </Link>
+                <Link
+                  to="/orders"
+                  className="block px-4 py-2 text-sm hover:bg-gray-100"
+                  onClick={() => setDropdownOpen(false)}
+                >
+                  Orders
+                </Link>
+                <Link
+                  to="/wishlist"
+                  className="block px-4 py-2 text-sm hover:bg-gray-100"
+                  onClick={() => setDropdownOpen(false)}
+                >
+                  Wishlist
+                </Link>
+                <hr className="my-1" />
+                <button
+                  onClick={handleLogout}
+                  className="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+
           <FaRegHeart
-            style={{ color: color }}
+            style={{ color }}
             onMouseEnter={() => setColor("#E94A85")}
             onMouseLeave={() => setColor("black")}
             className="text-[25px] cursor-pointer"
           />
 
-          {/* Cart */}
           <div
             onClick={() => setIsCartSidebarOpen(true)}
             onMouseEnter={() => setLockColor("#E94A85")}
             onMouseLeave={() => setLockColor("black")}
             className="flex items-center cursor-pointer"
           >
-            <LiaLockSolid style={{ color: lockColor}}
-            size={25} 
-            className="text-[25px]"
-            />
+            <LiaLockSolid style={{ color: lockColor }} size={25} />
             <div className="hidden md:block">
-              {
-                user? <p>faizan</p>: <p>$0.00</p>
-              }             
+              <p>$0.00</p>
               <p className="leading-3.5">My Cart</p>
             </div>
           </div>
         </div>
       </nav>
+
+      <ToastContainer position="bottom-right" autoClose={1000} />
     </div>
   );
 };

@@ -59,7 +59,7 @@ const Auth = () => {
         setMessage({ type: "success", text: res.data.message || "Login successful!" });
 
         // Save token & user
-        localStorage.setItem("token", JSON.stringify(res.data.accessToken));
+        localStorage.setItem("token", res.data.accessToken);
         localStorage.setItem("user", JSON.stringify(res.data.user));
         setUser(res.data.user);
 

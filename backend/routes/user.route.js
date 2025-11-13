@@ -6,7 +6,8 @@ import {
   verification,
   forgotPassword,
   verifyOTP,
-  changePassword
+  changePassword,
+  getAllUsers
 } from "../controllers/User.controller.js";
 
 import { isAuthenticated,AuthorizeRole } from "../middlewares/isAuthenticated.js";
@@ -20,6 +21,8 @@ router.post("/logout", isAuthenticated, logoutUser);
 router.post("/forgot-password", forgotPassword);
 router.post("/verify-otp/:email", verifyOTP);
 router.post("/change-password/:email", changePassword);
+
+router.get("/get/all-users", isAuthenticated, AuthorizeRole("admin"), getAllUsers);
 
 // ✅ Accessible to both user & admin
 router.get(

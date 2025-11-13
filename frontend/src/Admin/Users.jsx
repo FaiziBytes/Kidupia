@@ -1,7 +1,6 @@
-// 
-
 import React, { useEffect, useState } from "react";
 import { FaUser, FaUserCheck, FaUserTimes, FaUserPlus } from "react-icons/fa";
+import axios from 'axios';
 
 const Users = () => {
   const [stats, setStats] = useState({});
@@ -9,60 +8,38 @@ const Users = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // ✅ Simulate backend data for users
+  // ✅ Fetching data from the backend
   useEffect(() => {
-    setTimeout(() => {
+    // Simulating API call
+    const fetchData = async () => {
       try {
-        const dummyStats = {
-          totalUsers: 120,
-          activeUsers: 90,
-          newThisMonth: 15,
-          blockedUsers: 5,
-        };
+        setLoading(true);
 
-        const dummyUsers = [
-          {
-            _id: "USR001",
-            name: "John Doe",
-            email: "john@example.com",
-            joined: "2025-10-15",
-            status: "Active",
-            role: "Customer",
+        // Fetching stats
+        // const statsResponse = await axios.get('http://localhost:3000/api/users/stats', {
+        //   headers: {
+        //     Authorization: `Bearer ${localStorage.getItem('token')}`,
+        //   },
+        // });
+        
+        // Fetching user data
+        const usersResponse = await axios.get('http://localhost:3000/user/get/all-users', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
-          {
-            _id: "USR002",
-            name: "Jane Smith",
-            email: "jane@example.com",
-            joined: "2025-09-22",
-            status: "Blocked",
-            role: "Customer",
-          },
-          {
-            _id: "USR003",
-            name: "Ali Khan",
-            email: "ali.khan@example.com",
-            joined: "2025-11-02",
-            status: "Active",
-            role: "Admin",
-          },
-          {
-            _id: "USR004",
-            name: "Sara Ahmed",
-            email: "sara.ahmed@example.com",
-            joined: "2025-10-05",
-            status: "Pending",
-            role: "Customer",
-          },
-        ];
+        });
 
-        setStats(dummyStats);
-        setUsers(dummyUsers);
+        // Update state with fetched data
+        setUsers(usersResponse.data.data);   // Assuming response contains an array of users
       } catch (err) {
-        setError("Failed to load dummy data");
+        setError("Failed to load data from the server");
+        console.error(err);
       } finally {
         setLoading(false);
       }
-    }, 1000);
+    };
+
+    fetchData();
   }, []);
 
   return (
@@ -81,25 +58,25 @@ const Users = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <StatCard
               title="Total Users"
-              value={stats.totalUsers}
+              value={users.length}
               icon={<FaUser className="text-blue-600 text-xl" />}
               bg="bg-blue-100"
             />
             <StatCard
               title="Active Users"
-              value={stats.activeUsers}
+              value={users.length}
               icon={<FaUserCheck className="text-green-600 text-xl" />}
               bg="bg-green-100"
             />
             <StatCard
               title="New This Month"
-              value={stats.newThisMonth}
+              value={users.length}
               icon={<FaUserPlus className="text-yellow-600 text-xl" />}
               bg="bg-yellow-100"
             />
             <StatCard
               title="Blocked Users"
-              value={stats.blockedUsers}
+              value={0}
               icon={<FaUserTimes className="text-red-600 text-xl" />}
               bg="bg-red-100"
             />
@@ -131,7 +108,7 @@ const Users = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((user) => (
+                  {users?.map((user) => (
                     <tr
                       key={user._id}
                       className="border-t hover:bg-gray-50 transition"
@@ -139,10 +116,10 @@ const Users = () => {
                       <td className="py-3 px-6 font-medium text-gray-800">
                         #{user._id}
                       </td>
-                      <td className="py-3 px-6">{user.name}</td>
+                      <td className="py-3 px-6">{user.username}</td>
                       <td className="py-3 px-6">{user.email}</td>
                       <td className="py-3 px-6">
-                        {new Date(user.joined).toLocaleDateString()}
+                        {new Date(user.createdAt).toLocaleDateString()}
                       </td>
                       <td className="py-3 px-6">{user.role}</td>
                       <td
@@ -154,7 +131,9 @@ const Users = () => {
                             : "text-red-600"
                         }`}
                       >
-                        {user.status}
+                        {
+                          user.isVerified ? "Loged":"Logged Out"
+                        }
                       </td>
                     </tr>
                   ))}

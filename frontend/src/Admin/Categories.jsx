@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { FaTags, FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 
@@ -9,16 +9,16 @@ const Categories = () => {
 
   // Add Category modal states
   const [showModal, setShowModal] = useState(false);
-  const [newCategory, setNewCategory] = useState({ name: "", description: "" });
+  const [newCategory, setNewCategory] = useState({ name: "", slug: "" });
   const [addLoading, setAddLoading] = useState(false);
   const [message, setMessage] = useState("");
-
+  const [id,setId] = useState("");
   // Fetch categories from backend
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const token = JSON.parse(localStorage.getItem("token"));
-      const res = await axios.get("http://localhost:3000/api/category/get-all", {
+      const token = localStorage.getItem("token");
+      const res = await axios.get("http://localhost:3000/api/categories/get",{}, {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
       });
@@ -59,9 +59,9 @@ const Categories = () => {
 
     try {
       setAddLoading(true);
-      const token = JSON.parse(localStorage.getItem("token"));
+      const token = localStorage.getItem("token");
       const res = await axios.post(
-        "http://localhost:3000/api/category/add",
+        "http://localhost:3000/api/categories/create",
         newCategory,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -69,7 +69,7 @@ const Categories = () => {
       if (res.data.success) {
         setCategories([res.data.category, ...categories]); // Update table instantly
         setMessage("Category added successfully!");
-        setNewCategory({ name: "", description: "" });
+        setNewCategory({ name: "", slug: "" });
         setShowModal(false);
       } else {
         setMessage(res.data.message || "Failed to add category");
@@ -82,17 +82,32 @@ const Categories = () => {
     }
   };
 
+const handleDeleteCategory = () => {
+  if (window.confirm("Are you sure you want to delete this category?")) {
+    deleteCategory();
+  }
+};
+
+const deleteCategory = async () => {
+  const token = localStorage.getItem("token");
+  try {
+    await axios.delete(`http://localhost:3000/api/categories/delete/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setMessage("Category deleted successfully");
+    fetchCategories();
+  } catch (error) {
+    setMessage(error.response?.data?.message || "Server error while deleting category");
+  }
+};
   return (
     <div className="flex-1 p-6 bg-gray-50 min-h-screen">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <h1 className="text-2xl font-semibold text-gray-800">Categories Management</h1>
-        <button
-          onClick={() => setShowModal(true)}
-          className="mt-4 sm:mt-0 flex items-center gap-2 bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition"
-        >
-          <FaPlus /> Add New Category
-        </button>
+        <button onClick={() => setShowModal(true)}
+          className="mt-4 sm:mt-0 flex items-center gap-2 bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition">
+          <FaPlus/> Add New Category </button>
       </div>
 
       {/* Feedback Message */}
@@ -141,7 +156,12 @@ const Categories = () => {
                   <td className="py-3 px-6">{new Date(cat.createdAt).toLocaleDateString()}</td>
                   <td className="py-3 px-6 text-center">
                     <button className="text-blue-600 hover:text-blue-800 mx-2"><FaEdit /></button>
-                    <button className="text-red-600 hover:text-red-800 mx-2"><FaTrash /></button>
+                    <button 
+                    onClick={()=>{
+                      setId(cat._id);
+                      handleDeleteCategory();
+                    }}
+                    className="text-red-600 hover:text-red-800 mx-2"><FaTrash /></button>
                   </td>
                 </tr>
               ))}

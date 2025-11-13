@@ -8,11 +8,11 @@ import { isAuthenticated,AuthorizeRole } from "../middlewares/isAuthenticated.js
 const router = express.Router();
 
 // Anyone can get categories
-router.get("/", getCategories);
-router.post("/create", createCategory);
+router.get("/get", getCategories);
+// router.post("/create", createCategory);
 
 // Only admin can create or delete categories
-// router.post("/", AuthorizeUser, AuthorizeRole("admin"), createCategory);
-router.delete("/:id", isAuthenticated, AuthorizeRole("admin"), deleteCategory);
+router.post("/create", isAuthenticated, AuthorizeRole("admin"), createCategory);
+router.delete("/delete/:id", isAuthenticated, AuthorizeRole("admin"), deleteCategory);
 
 export default router;

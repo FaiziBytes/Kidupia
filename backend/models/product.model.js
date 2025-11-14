@@ -1,10 +1,11 @@
+// models/Product.js
 import mongoose from "mongoose";
 
 // Each variant has its own attributes, price, and stock
 const variantSchema = new mongoose.Schema(
   {
     attributes: {
-      type: Map, // dynamic key-value pairs like size, color, material
+      type: Map, // dynamic key-value pairs like { Size: "M", Color: "Red" }
       of: String,
       required: true,
     },
@@ -33,6 +34,8 @@ const productSchema = new mongoose.Schema(
     brand: { type: String },
     tags: { type: [String], default: [] },
     images: { type: [String], required: true },
+    discountPrice: { type: Number }, // added discount price
+    attributes: [{ name: String, value: String }], // added attributes array
     variants: [variantSchema], // dynamic variants with stock
     rating: { type: Number, default: 0 },
     numReviews: { type: Number, default: 0 },

@@ -1,35 +1,43 @@
-// import React from 'react'
-
-// const Products = () => {
-//   return (
-//     <div>Products</div>
-//   )
-// }
-
-// export default Products
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaBox, FaEdit, FaTrash, FaPlus, FaSearch } from "react-icons/fa";
-
-const sampleProducts = [
-  // Placeholder data; replace with API data later
-  { id: "1", name: "Product A", price: 25, category: "Category 1" },
-  { id: "2", name: "Product B", price: 40, category: "Category 2" },
-  { id: "3", name: "Product C", price: 30, category: "Category 1" },
-];
-
+import axios from "axios";
+import { Link } from "react-router-dom";
 const Products = () => {
-  const [products, setProducts] = useState(sampleProducts);
+  const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const handleDelete = (id) => {
+  // Fetch products from backend
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/products"); // backend endpoint
+        setProducts(res.data);
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this product?")) return;
-    setProducts(products.filter((p) => p.id !== id));
+
+    try {
+      await axios.delete(`http://localhost:5000/api/products/${id}`);
+      setProducts(products.filter((p) => p._id !== id));
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const filteredProducts = products.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
   );
+
+  if (loading) return <div className="p-6">Loading products...</div>;
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -50,13 +58,14 @@ const Products = () => {
             />
             <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           </div>
-
+          <Link to="/admin/add/product">
           <button
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            onClick={() => alert("Open Add Product Modal")}
+            onClick={()=>{}}
           >
             <FaPlus /> Add Product
           </button>
+          </Link>
         </div>
       </div>
 
@@ -75,8 +84,8 @@ const Products = () => {
           <tbody>
             {filteredProducts.length > 0 ? (
               filteredProducts.map((prod) => (
-                <tr key={prod.id} className="text-gray-700 hover:bg-gray-50">
-                  <td className="py-2 px-4 border">{prod.id}</td>
+                <tr key={prod._id} className="text-gray-700 hover:bg-gray-50">
+                  <td className="py-2 px-4 border">{prod._id}</td>
                   <td className="py-2 px-4 border">{prod.name}</td>
                   <td className="py-2 px-4 border">${prod.price}</td>
                   <td className="py-2 px-4 border">{prod.category}</td>
@@ -89,7 +98,7 @@ const Products = () => {
                     </button>
                     <button
                       className="text-red-600 hover:text-red-800"
-                      onClick={() => handleDelete(prod.id)}
+                      onClick={() => handleDelete(prod._id)}
                     >
                       <FaTrash />
                     </button>
@@ -105,14 +114,6 @@ const Products = () => {
             )}
           </tbody>
         </table>
-      </div>
-
-      {/* Pagination Placeholder */}
-      <div className="mt-4 flex justify-end gap-2">
-        <button className="px-3 py-1 border rounded hover:bg-gray-100">Prev</button>
-        <button className="px-3 py-1 border rounded hover:bg-gray-100">1</button>
-        <button className="px-3 py-1 border rounded hover:bg-gray-100">2</button>
-        <button className="px-3 py-1 border rounded hover:bg-gray-100">Next</button>
       </div>
     </div>
   );

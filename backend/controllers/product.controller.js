@@ -1,7 +1,6 @@
 import productModel from "../models/product.model.js";
 import categoryModel from "../models/category.model.js";
 
-// Create a new product
 export const createProduct = async (req, res) => {
   try {
     const {
@@ -9,40 +8,144 @@ export const createProduct = async (req, res) => {
       description,
       price,
       discountPrice,
-      category, // category ID
+      category,
       brand,
       tags,
-      images, // array of image URLs
-      attributes, // dynamic object
-      variants, // array of { attributes, price, stock }
-      isActive,
+      attributes,
+      variants,
+      isActive
     } = req.body;
 
-    // Validate required fields
-    if (
-      !title ||
-      !description ||
-      !price ||
-      !category ||
-      !images ||
-      images.length === 0
-    ) {
+    // ---------------------------
+    // 1. VALIDATION
+    // ---------------------------
+    if (!title || !description || !price || !category) {
       return res.status(400).json({
         success: false,
-        message:
-          "Title, description, price, category, and at least one image are required",
+        message: "Missing required fields"
       });
     }
 
-    // Check if category exists
+    // Check category exists
     const categoryExists = await categoryModel.findById(category);
     if (!categoryExists) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid category ID" });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid category ID"
+      });
     }
 
-    // Create product
+    // ---------------------------
+    // 2. HANDLE IMAGE UPLOAD (multer)
+    // ---------------------------
+    const imageUrls = req.files?.map(file =>
+      `${req.protocol}://${req.get("host")}/uploads/${file.filename}`
+    ) || [];
+
+    // ---------------------------
+    // 3. HANDLE VARIANTS SAFELY
+    // ---------------------------
+    let formattedVariants = [];
+
+    try {
+      if (!variants || variants.trim() === "") {
+        formattedVariants = [];
+      } else {
+        const parsed = JSON.parse(variants);
+
+        if (!Array.isArray(parsed)) {
+          return res.status(400).json({
+            success: false,
+            message: "Variants must be an array"
+          });
+        }
+
+        formattedVariants = parsed
+          .filter(v => v.attributes && v.price && v.stock)
+          .map(v => {
+            const attributesObj = Object.fromEntries(
+              v.attributes
+                .split(",")
+                .map(pair => pair.split(":").map(s => s.trim()))
+            );
+
+            return {
+              attributes: attributesObj,
+              price: Number(v.price),
+              stock: Number(v.stock)
+            };
+          });
+      }
+    } catch (err) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid variant format. Must be valid JSON."
+      });
+    }
+
+ // ---------------------------
+// 4. PARSE TAGS & ATTRIBUTES
+// ---------------------------
+let parsedAttributes = [];
+let parsedTags = [];
+
+// Parse Tags
+try {
+  if (!tags || tags === "" || tags === "undefined" || tags === "null") {
+    parsedTags = [];
+  } else if (typeof tags === 'string') {
+    // Check if it looks like JSON
+    const trimmed = tags.trim();
+    if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+      // It's JSON array
+      parsedTags = JSON.parse(tags);
+    } else {
+      // It's a comma-separated string
+      parsedTags = tags
+        .split(',')
+        .map(tag => tag.trim())
+        .filter(tag => tag !== '');
+    }
+  } else if (Array.isArray(tags)) {
+    // Already an array
+    parsedTags = tags;
+  } else {
+    parsedTags = [];
+  }
+} catch (err) {
+  console.error("Tags parsing error:", err);
+  return res.status(400).json({
+    success: false,
+    message: "Invalid tags format"
+  });
+}
+
+// Parse Attributes
+try {
+  if (!attributes || attributes === "" || attributes === "undefined" || attributes === "null") {
+    parsedAttributes = [];
+  } else if (typeof attributes === 'string') {
+    const trimmed = attributes.trim();
+    if (trimmed.startsWith('[') || trimmed.startsWith('{')) {
+      parsedAttributes = JSON.parse(attributes);
+    } else {
+      parsedAttributes = [];
+    }
+  } else if (Array.isArray(attributes)) {
+    parsedAttributes = attributes;
+  } else {
+    parsedAttributes = [];
+  }
+} catch (err) {
+  console.error("Attributes parsing error:", err);
+  return res.status(400).json({
+    success: false,
+    message: "Invalid attributes format (must be JSON)"
+  });
+}
+    // ---------------------------
+    // 5. CREATE PRODUCT
+    // ---------------------------
     const product = await productModel.create({
       title,
       description,
@@ -50,58 +153,31 @@ export const createProduct = async (req, res) => {
       discountPrice: discountPrice || null,
       category,
       brand: brand || "",
-      tags: tags || [],
-      images,
-      attributes: attributes || {},
-      variants: variants || [],
-      isActive: isActive !== undefined ? isActive : true,
+      tags: parsedTags,
+      images: imageUrls,
+      attributes: parsedAttributes,
+      variants: formattedVariants,
+      isActive: isActive !== undefined ? isActive : true
     });
 
-    res
-      .status(201)
-      .json({
-        success: true,
-        message: "Product created successfully",
-        product,
-      });
+    return res.status(201).json({
+      success: true,
+      message: "Product created successfully",
+      product
+    });
+
   } catch (error) {
-    console.error("Error creating product:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Internal server error",
-        error: error.message,
-      });
+    console.error("Create Product Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message
+    });
   }
 };
 
-// Get all products (optional: filter by category, search, etc.)
-export const getAllProducts = async (req, res) => {
-  try {
-    const { categoryId, search } = req.query;
-    const filter = {};
 
-    if (categoryId) filter.category = categoryId;
-    if (search) filter.title = { $regex: search, $options: "i" };
-
-    const products = await productModel
-      .find(filter)
-      .populate("category", "name")
-      .sort({ createdAt: -1 });
-
-    res.status(200).json({ success: true, products });
-  } catch (error) {
-    console.error("Error fetching products:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Internal server error",
-        error: error.message,
-      });
-  }
-};
 
 // Get single product by ID
 export const getProductById = async (req, res) => {

@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import AddProduct from "./components/AddaProduct.jsx";
 
 // 🌐 Layouts
 const Layout = lazy(() => import("./Layout/layout"));
@@ -61,6 +62,7 @@ function App() {
             <Route path="categories" element={<Categories />} />
             <Route path="products" element={<Products />} />
             <Route path="orders" element={<Orders />} />
+            <Route path="add/product" element={<AddProduct />} />
           </Route>
         </Routes>
       </Suspense>

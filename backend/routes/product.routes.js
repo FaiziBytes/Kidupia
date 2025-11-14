@@ -1,22 +1,14 @@
+// routes/product.routes.js
 import express from "express";
-import {
-  createProduct,
-  getAllProducts,
-  getProductById,
-} from "../controllers/product.controller.js";
-import {
-  isAuthenticated,
-  AuthorizeRole
-} from "../middlewares/isAuthenticated.js";
+import upload from "../utlis/multer.js";
+import { createProduct,getProductById, updateProduct, deleteProduct } from "../controllers/product.controller.js";
 
 const router = express.Router();
 
-// Public routes
-router.get("/", getAllProducts);
-router.get("/get/product/:Id", getProductById);
-// router.post("/", createProduct);
+router.get("/:id", getProductById);
 
-// Admin-only routes
-router.post("/create/product", isAuthenticated, AuthorizeRole("admin"), createProduct);
+router.post("/create/product", upload.array("images"), createProduct);
+router.put("/update/:id", updateProduct);
+router.delete("/delete/:id", deleteProduct);
 
-export default router;
+export default router; // must be default export

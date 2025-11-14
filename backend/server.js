@@ -33,6 +33,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/uploads", express.static("uploads"));
 
 // 🔹 Test route
 app.get("/", (req, res) => {

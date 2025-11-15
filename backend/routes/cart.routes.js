@@ -11,6 +11,7 @@ import {
   AuthorizeRole
 } from "../middlewares/isAuthenticated.js";
 
+
 const router = express.Router();
 
 // All routes require authentication

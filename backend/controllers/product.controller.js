@@ -272,3 +272,19 @@ export const deleteProduct = async (req, res) => {
       });
   }
 };
+
+export const getAllProducts = async (req, res) => {
+  try {
+    const products = await productModel.find();
+    res.status(200).json({ success: true, products });
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+  }
+}

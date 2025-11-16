@@ -64,6 +64,7 @@ const Auth = () => {
         setUser(res.data.user);
 
         // Navigate after slight delay for better UX
+            window.scrollTo({ top: 0, behavior: "smooth" });
         setTimeout(() => navigate("/"), 1000);
       } else {
         setMessage({ type: "error", text: res.data.message || "Login failed!" });
@@ -93,6 +94,7 @@ const Auth = () => {
 
         // Navigate to verification page
         setTimeout(() => navigate("/verify"), 1000);
+          window.scrollTo({ top: 0, behavior: "smooth" });
       } else {
         setMessage({ type: "error", text: res.data.message || "Registration failed!" });
       }

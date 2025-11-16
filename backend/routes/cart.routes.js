@@ -16,7 +16,6 @@ const router = express.Router();
 
 // All routes require authentication
 router.use(isAuthenticated);
-
 router.get("/:userId", getUserCart);
 router.post("/add", addToCart);
 router.put("/update", updateCartItem);

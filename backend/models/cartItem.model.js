@@ -12,7 +12,7 @@ const cartItemSchema = new mongoose.Schema(
       required: true,
       default: 1,
     },
-    variant: {
+    variantAttributes: {
       type: Object, // dynamically stores attributes like { color: "Red", size: "M" }
       default: {},
     },

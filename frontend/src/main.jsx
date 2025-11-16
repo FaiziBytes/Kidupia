@@ -24,6 +24,7 @@ import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import CreateUserProvider from "./contexts/createUserProvider.jsx";
 
+
 // 🔹 Add curly braces if it's a named export
 
 createRoot(document.getElementById("root")).render(
@@ -35,3 +36,4 @@ createRoot(document.getElementById("root")).render(
     </BrowserRouter>
   </StrictMode>
 );
+

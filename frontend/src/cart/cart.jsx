@@ -1,6 +1,7 @@
 
-import React from "react";
-
+import axios from "axios";
+import React, { useContext, useEffect } from "react";
+import { useState } from "react";
 /**
  * 🛒 CartSideBar Component
  * ------------------------
@@ -11,8 +12,34 @@ import React from "react";
  *  - isOpen (boolean): Controls visibility of the sidebar
  *  - onClose (function): Closes the sidebar
  */
-
+import { UserContext } from "../contexts/createUserContext.jsx"
 export default function CartSideBar({ isOpen, onClose }) {
+  const { user, setUser } = useContext(UserContext);
+  const [cartItems,setCartItems] = useState([]);
+  const fetchData = async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const userId = user._id;
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/cart/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if(response.success){
+        setCartItems(response.data.items);
+      }
+      console.log(response.data);
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+  useEffect(() => {
+    fetchData();
+  }, [])
   return (
     <>
       {/* ✅ Overlay (dark background when sidebar is open) */}

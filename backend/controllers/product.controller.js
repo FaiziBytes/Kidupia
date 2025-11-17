@@ -178,7 +178,6 @@ try {
 };
 
 
-
 // Get single product by ID
 export const getProductById = async (req, res) => {
   try {

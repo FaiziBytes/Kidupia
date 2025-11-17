@@ -35,7 +35,7 @@ function App() {
           {/* 🌐 Public Routes */}
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
-            <Route path="/Home/shop" element={<Shop />} />
+            <Route path="/shop" element={<Shop />} />
             <Route path="/Home/Account" element={<Auth />} />
             <Route path="/Account/Forgot/Password" element={<ForgotPassword />} />
             <Route path="/product/shop" element={<ProductByid />} />

@@ -66,7 +66,7 @@ const Navbar2 = () => {
           </Link>
 
           {/* 🛒 Shop */}
-          <Link to="Home/Shop">
+          <Link to="/shop">
             <p
               style={{
                 color: selectedMenu === "shop" ? "#E94A85" : "black",
@@ -189,3 +189,4 @@ const Navbar2 = () => {
 };
 
 export default Navbar2;
+

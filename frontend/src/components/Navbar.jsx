@@ -11,7 +11,7 @@ import { UserContext } from "../contexts/createUserContext";
 import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import { CartContext } from "../contexts/CartContext";
 const Navbar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCartSidebarOpen, setIsCartSidebarOpen] = useState(false);
@@ -20,7 +20,8 @@ const Navbar = () => {
   const [colorForAccount, setColorForAccount] = useState("black");
   const [lockColor, setLockColor] = useState("black");
   const { user, setUser } = useContext(UserContext);
-
+  const { clearCart } = useContext(CartContext);
+  const { cart } = useContext(CartContext);
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
 
@@ -36,6 +37,7 @@ const Navbar = () => {
 
   // ✅ Close dropdown when clicking outside
   useEffect(() => {
+    
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownOpen(false);
@@ -67,7 +69,7 @@ const Navbar = () => {
       if (res.data.success) {
         toast.success(res.data.message || "Logout successful!");
       }
-
+      clearCart(); // Clear cart on logout
       localStorage.removeItem("user");
       localStorage.removeItem("token");
       setUser(null);
@@ -187,7 +189,7 @@ const Navbar = () => {
           >
             <LiaLockSolid style={{ color: lockColor }} size={25} />
             <div className="hidden md:block">
-              <p>$0.00</p>
+              <p>${cart?.totalPrice || "0.00"}</p>
               <p className="leading-3.5">My Cart</p>
             </div>
           </div>
@@ -200,3 +202,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

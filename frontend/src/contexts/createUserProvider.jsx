@@ -2,8 +2,9 @@ import React, { useState } from 'react'
 import { UserContext } from './createUserContext';
 const CreateUserProvider = ({children}) => {
       const [user,setUser] = useState(null);
+      const[cart,setCart] = useState(null);
   return (
-    <UserContext.Provider value={{user,setUser}}>
+    <UserContext.Provider value={{user,setUser,cart,setCart}}>
       {children}
     </UserContext.Provider>
   )

@@ -23,7 +23,7 @@ import "./index.css";
 import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import CreateUserProvider from "./contexts/createUserProvider.jsx";
-
+import { CartProvider } from "./contexts/cartcontext.jsx";
 
 // 🔹 Add curly braces if it's a named export
 
@@ -31,7 +31,9 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <CreateUserProvider>
+         <CartProvider>
         <App />
+         </CartProvider>
       </CreateUserProvider>
     </BrowserRouter>
   </StrictMode>

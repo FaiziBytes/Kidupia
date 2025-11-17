@@ -12,6 +12,7 @@ const VerifyGmail = lazy(() => import("./auth/verifyGmail"));
 const Home = lazy(() => import("./Home-page/home"));
 const Shop = lazy(() => import("./Shop/Shop.jsx"));
 const Auth = lazy(() => import("./auth/auth"));
+const Checkout = lazy(() => import("./components/checkout.jsx"));
 const ForgotPassword = lazy(() => import("./auth/forgotpassword"));
 const ProductByid = lazy(() => import("./Products/productByid.jsx"));
 const EmailVerificationNotice = lazy(() => import("./auth/verify.jsx"));
@@ -38,6 +39,7 @@ function App() {
             <Route path="/Home/Account" element={<Auth />} />
             <Route path="/Account/Forgot/Password" element={<ForgotPassword />} />
             <Route path="/product/shop" element={<ProductByid />} />
+            <Route path="/checkout" element={<Checkout />} />
           </Route>
 
           {/* 🔹 Email Verification */}

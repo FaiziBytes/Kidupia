@@ -1,107 +1,65 @@
-
-import axios from "axios";
 import React, { useContext, useEffect } from "react";
-import { useState } from "react";
-/**
- * 🛒 CartSideBar Component
- * ------------------------
- * A responsive and professional sidebar that slides in from the right side.
- * Used to display shopping cart items or menus.
- *
- * Props:
- *  - isOpen (boolean): Controls visibility of the sidebar
- *  - onClose (function): Closes the sidebar
- */
-import { UserContext } from "../contexts/createUserContext.jsx"
+import { CartContext } from "../contexts/CartContext";
+
 export default function CartSideBar({ isOpen, onClose }) {
-  const { user, setUser } = useContext(UserContext);
-  const [cartItems,setCartItems] = useState([]);
-  const fetchData = async () => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    const userId = user._id;
-    const token = localStorage.getItem("token");
-    try {
-      const response = await axios.get(
-        `http://localhost:3000/api/cart/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if(response.success){
-        setCartItems(response.data.items);
-      }
-      console.log(response.data);
-    } catch (error) {
-      console.log(error.message);
-    }
-  }
+  const { cart, fetchCart, removeFromCart } = useContext(CartContext);
+  
   useEffect(() => {
-    fetchData();
-  }, [])
+    if (isOpen) fetchCart();
+  }, [isOpen]);
+
   return (
     <>
-      {/* ✅ Overlay (dark background when sidebar is open) */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-opacity-40 z-1140 transition-opacity"
-          onClick={onClose} // Close when clicking outside
-        ></div>
-      )}
-
-      {/* ✅ Sidebar Panel (slides in from right) */}
+      {isOpen && <div className="fixed inset-0 z-40" onClick={onClose} />}
       <aside
-        className={`fixed top-0 right-0 h-full w-80 sm:w-96 bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out
-          ${isOpen ? "translate-x-0" : "translate-x-full"}
-        `}
+        className={`fixed top-0 right-0 h-full w-80 bg-white shadow-xl z-50 
+          transform transition-transform duration-300 
+          flex flex-col
+          ${isOpen ? "translate-x-0" : "translate-x-full"}`}
       >
-        {/* =========================
-            🧩 Header Section
-        ========================== */}
-        <div className="flex items-center justify-between px-5 py-4 border-b">
-          <h2 className="text-lg font-semibold text-gray-800">Your Cart</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
-          >
+        <div className="flex justify-between p-4 border-b flex-shrink-0">
+          <h2 className="text-lg font-semibold">Your Cart</h2>
+          <button onClick={onClose} className="text-xl">
             ×
           </button>
         </div>
 
-        {/* =========================
-            🧺 Cart Items Section
-        ========================== */}
-        <div className="p-5 space-y-4 overflow-y-auto h-[calc(100%-150px)]">
-          {/* Example Empty Cart Message */}
-          <p className="text-gray-500 text-center mt-10">
-            Your cart is currently empty.
-          </p>
-
-          {/* 🔹 Example of what a cart item could look like:
-          <div className="flex items-center justify-between border-b pb-3">
-            <div className="flex items-center space-x-3">
-              <img
-                src="https://via.placeholder.com/60"
-                alt="Product"
-                className="w-14 h-14 object-cover rounded-md"
-              />
-              <div>
-                <h3 className="text-gray-800 font-medium">Product Name</h3>
-                <p className="text-sm text-gray-500">1 × $25</p>
+        <div className="p-5 flex-grow overflow-y-auto">
+          {!cart?.items?.length ? (
+            <p className="text-gray-500 text-center mt-10">Your cart is empty.</p>
+          ) : (
+            cart.items.map((item,index) => (
+              <div key={item._id} className="border-b py-3 flex items-center gap-4">
+                <img
+                  src={item.product.images[0] || "https://via.placeholder.com/64"}
+                  alt={item.product.title}
+                  className="w-16 h-16 object-cover rounded"
+                />
+                <div className="flex-grow min-w-0">
+                  <p className="font-medium truncate">{item.product.title}</p>
+                  <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
+                </div>
+                <button
+                  onClick={() => removeFromCart(item.product._id)}
+                  className="text-red-600 hover:text-red-800 font-semibold whitespace-nowrap ml-2"
+                >
+                  Remove
+                </button>
               </div>
-            </div>
-            <span className="text-gray-800 font-semibold">$25</span>
-          </div> 
-          */}
+            ))
+          )}
         </div>
 
-        {/* =========================
-            💳 Footer Section
-        ========================== */}
-        <div className="absolute bottom-0 left-0 w-full border-t p-5 bg-white">
+        <div className="border-t p-5 bg-white flex-shrink-0">
+          <div className="pb-4">
+            <p className="font-semibold text-lg">
+              Subtotal: <span className="text-pink-500">${cart?.totalPrice || 0}</span>
+            </p>
+            <p className="text-sm text-gray-500">Shipping & taxes calculated at checkout.</p>
+          </div>
+
           <button
-            className="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-3 rounded-lg transition"
+            className="w-full bg-pink-500 text-white py-3 font-medium rounded"
             onClick={onClose}
           >
             Proceed to Checkout

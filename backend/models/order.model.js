@@ -7,11 +7,11 @@ const orderItemSchema = new mongoose.Schema(
       ref: "Product",
       required: true,
     },
-    variant: {
-      type: Map, // same structure as Product variant attributes
-      of: String,
-      required: true,
-    },
+    // variant: {
+    //   type: Map, // same structure as Product variant attributes
+    //   of: String,
+    //   required: true,
+    // },
     quantity: { type: Number, required: true, default: 1 },
     price: { type: Number, required: true }, // price of this variant at order time
   },

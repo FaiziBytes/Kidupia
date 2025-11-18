@@ -1,9 +1,11 @@
 import React, { useContext, useEffect } from "react";
 import { CartContext } from "../contexts/CartContext";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function CartSideBar({ isOpen, onClose }) {
   const { cart, fetchCart, removeFromCart } = useContext(CartContext);
-  
+  const navigate = useNavigate();
   useEffect(() => {
     if (isOpen) fetchCart();
   }, [isOpen]);
@@ -28,7 +30,7 @@ export default function CartSideBar({ isOpen, onClose }) {
           {!cart?.items?.length ? (
             <p className="text-gray-500 text-center mt-10">Your cart is empty.</p>
           ) : (
-            cart.items.map((item,index) => (
+            cart.items.map((item, index) => (
               <div key={item._id} className="border-b py-3 flex items-center gap-4">
                 <img
                   src={item.product.images[0] || "https://via.placeholder.com/64"}
@@ -60,7 +62,10 @@ export default function CartSideBar({ isOpen, onClose }) {
 
           <button
             className="w-full bg-pink-500 text-white py-3 font-medium rounded"
-            onClick={onClose}
+            onClick={() => {
+              onClose();
+              navigate("/checkout");
+            }}
           >
             Proceed to Checkout
           </button>

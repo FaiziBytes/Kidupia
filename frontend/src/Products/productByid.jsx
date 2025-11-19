@@ -101,7 +101,7 @@ const ProductById = () => {
           <p className="mb-3 text-gray-700">{product.description}</p>
 
           <div className="px-3 py-1 bg-green-100 rounded-md w-fit mb-3">
-            <p className="text-green-600 font-medium">{product.stock || 0} in stock</p>
+            <p className="text-green-600 font-medium">{product.stock || 150} in stock</p>
           </div>
 
           {/* Quantity Selector */}

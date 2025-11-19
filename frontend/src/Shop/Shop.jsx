@@ -177,7 +177,7 @@ const Shop = () => {
               <div key={product._id} className="border p-2 rounded">
                 <img src={product.images[0]} alt={product.title} className="rounded" />
                 <div className="px-2 flex flex-col gap-1">
-                  <h2 className="line-clamp-2"
+                  <h2 className="line-clamp-2 hover:cursor-pointer"
                   onClick={()=>{
                     navigate(`/product/${product._id}`)
                   }}
@@ -187,7 +187,7 @@ const Shop = () => {
                   <button
                     onClick={() => addToCart(product)}
                     disabled={loadingProducts[product._id]}
-                    className="bg-gray-200 py-2 w-full mt-1 hover:bg-pink-500 hover:text-white"
+                    className="bg-gray-200 py-2 w-full hover:cursor-pointer mt-1 hover:bg-pink-500 hover:text-white"
                   >
                     {loadingProducts[product._id] ? "ADDING..." : "ADD TO CART"}
                   </button>

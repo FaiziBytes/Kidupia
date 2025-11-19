@@ -15,26 +15,13 @@ const ProductById = () => {
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [centerImage, setCenterImage] = useState('');
-  // Fetch product by ID
-  // const getProductById = async () => {
-  //   try {
-  //     const res = await axios.get(`http://localhost:3000/api/products/${id}`);
-  //     setProduct(res.data.product);
-  //     if (res.data.images && res.data.images.length > 0) {
-  //       setCenterImage(res.data.product.images[0]); // first image as main
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
+
   const getProductById = async () => {
     try {
       const res = await axios.get(`http://localhost:3000/api/products/${id}`);
-
       setProduct(res.data.product);
-
+      console.log(res.data);
       const imgs = res.data.product.images;
-
       if (imgs && imgs.length > 0) {
         setCenterImage(imgs[0]); // FIRST image
       }

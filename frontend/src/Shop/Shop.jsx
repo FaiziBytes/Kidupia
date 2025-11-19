@@ -4,8 +4,9 @@ import BreadcrumbBanner from "../components/breadcrumb.jsx";
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { IoMenu } from "react-icons/io5";
 import { BsGrid3X3Gap } from "react-icons/bs";
-import { CartContext } from "../contexts/cartcontext.jsx";
+import { CartContext } from "../contexts/CartContext.jsx";
 import { useSearch } from "../contexts/SearchContext";
+import { useNavigate } from "react-router-dom";
 
 const Shop = () => {
   const [open, setOpen] = useState(true);
@@ -17,7 +18,7 @@ const Shop = () => {
   const [gridView, setGridView] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(12);
-
+  const navigate = useNavigate();
   const { addToCart, loadingProducts } = useContext(CartContext);
   const { searchQuery } = useSearch();
 
@@ -176,7 +177,11 @@ const Shop = () => {
               <div key={product._id} className="border p-2 rounded">
                 <img src={product.images[0]} alt={product.title} className="rounded" />
                 <div className="px-2 flex flex-col gap-1">
-                  <h2 className="line-clamp-2">{product.title}</h2>
+                  <h2 className="line-clamp-2"
+                  onClick={()=>{
+                    navigate(`/product/${product._id}`)
+                  }}
+                  >{product.title}</h2>
                   <h1 className="font-bold text-[20px] text-[#E94A85]">${product.price}</h1>
                   <p>⭐⭐⭐⭐⭐</p>
                   <button

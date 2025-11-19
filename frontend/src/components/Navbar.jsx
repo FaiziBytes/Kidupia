@@ -11,7 +11,7 @@ import { UserContext } from "../contexts/createUserContext";
 import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { CartContext } from "../contexts/cartcontext";
+import { CartContext } from "../contexts/CartContext";
 import { useSearch } from "../contexts/SearchContext";
 
 const Navbar = () => {
@@ -87,14 +87,19 @@ const Navbar = () => {
           <GrMenu size={24} className="lg:hidden cursor-pointer" onClick={() => setIsSidebarOpen(true)} />
           <Link to="/"><img src={logo} alt="Logo" className="w-40" /></Link>
 
+          {/* 🔥 UPDATED SEARCH BAR (NOW WORKS FOR SHOP PAGE) */}
           <div className="hidden lg:flex items-center bg-[#F5F5F5] h-11 rounded">
             <div className="px-4 font-normal">All Categories</div>
             <div className="h-7 border-l border-[#E5E5E5] mx-2"></div>
+            
             <input
               type="text"
               placeholder="Search Your Products"
               value={searchQuery}
-              onChange={(e) => updateSearch(e.target.value)}
+              onChange={(e) => {
+                updateSearch(e.target.value); // update global search
+                navigate("/shop");            // 🔥 go to shop page instantly
+              }}
               className="h-11 bg-[#F5F5F5] pl-4 focus:outline-none placeholder:text-[#B6B6B6]"
             />
             <IoSearch className="text-2xl px-4" />

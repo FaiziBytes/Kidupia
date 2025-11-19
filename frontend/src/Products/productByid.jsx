@@ -1,202 +1,183 @@
+import React, { useEffect, useState, useContext } from "react";
+import BreadcrumbBanner from "../components/breadcrumb";
+import { FaShieldAlt, FaCoins, FaTruck } from "react-icons/fa";
+import ProductDescription from "./productDescription";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { CartContext } from "../contexts/CartContext";
+import BreadcrumbBanner2 from "../components/breadcrumb2";
 
-import React, { useState } from 'react';
-import BreadcrumbBanner from '../components/breadcrumb';
-import casualshoes1 from "../images/casualshoes-01-13.jpg";
-import casualshoes2 from "../images/casual-shoes-02-15.jpg";
-import casualshoes3 from "../images/casualshoes-03-13.jpg";
-import casualshoes4 from "../images/casual-shoes-04-11.jpg";
-import { FaShieldAlt } from "react-icons/fa";
-import { FaCoins } from "react-icons/fa6";
-import { FaTruckFast } from "react-icons/fa6";
-import ProductDescription from './productDescription';
+const ProductById = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { addToCart } = useContext(CartContext);
 
-
-const ProductByid = () => {
-  const images = [casualshoes1, casualshoes2, casualshoes3, casualshoes4];
-  const [centerImage, setCenterImage] = useState(casualshoes1);
+  const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
+  const [centerImage, setCenterImage] = useState('');
+  // Fetch product by ID
+  // const getProductById = async () => {
+  //   try {
+  //     const res = await axios.get(`http://localhost:3000/api/products/${id}`);
+  //     setProduct(res.data.product);
+  //     if (res.data.images && res.data.images.length > 0) {
+  //       setCenterImage(res.data.product.images[0]); // first image as main
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+  const getProductById = async () => {
+    try {
+      const res = await axios.get(`http://localhost:3000/api/products/${id}`);
+
+      setProduct(res.data.product);
+
+      const imgs = res.data.product.images;
+
+      if (imgs && imgs.length > 0) {
+        setCenterImage(imgs[0]); // FIRST image
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getProductById();
+  }, [id]);
+
+  // Add to cart
+  const handleAddToCart = () => {
+    if (!product) return;
+    addToCart(product, quantity);
+    setQuantity(1);
+  };
+
+  // Buy now
+  const handleBuyNow = () => {
+    if (!product) return;
+    // Navigate to checkout with this product only
+    navigate("/checkout", { state: { buyNowProduct: product, buyNowQuantity: quantity } });
+  };
+
+  if (!product) return <p>Loading...</p>;
 
   return (
     <div>
-      <BreadcrumbBanner />
+      <BreadcrumbBanner2
+        category={product.category.name}
+        title={product.title}
+      />
 
-      <div className='flex mt-10 w-full'>
-        {/* Thumbnail Images */}
-        <div className='w-[13%] px-3'>
-          {images.map((img, index) => (
+      {/* MAIN PRODUCT SECTION */}
+      <div className="flex flex-col lg:flex-row mt-10 w-full gap-6 px-3">
+
+        {/* Thumbnails */}
+        <div className="lg:w-[13%] flex lg:flex-col gap-3 overflow-x-auto">
+          {product.images?.map((img, index) => (
             <img
               key={index}
               onClick={() => setCenterImage(img)}
               src={img}
-              alt="Casual shoes"
-              loading='lazy'
-              width="140px"
-              className='border rounded-[5px] my-2 border-[#E5E5E5] hover:border-[#E94A85] transition-transform duration-500 ease-in-out hover:scale-90 cursor-pointer'
+              alt="Thumbnail"
+              className="border rounded-md w-20 h-20 object-cover cursor-pointer hover:border-[#E94A85] transition"
             />
           ))}
         </div>
 
         {/* Main Image */}
-        <div className='w-[46%]'>
+        <div className="lg:w-[46%] w-full">
           <img
             src={centerImage}
-            alt="Main product"
-            loading='lazy'
-            className='rounded-[5px] my-2 border border-[#E5E5E5]'
+            alt={product.title}
+            className="rounded-md border w-full object-cover"
           />
         </div>
 
         {/* Product Details */}
-        <div className='w-[41%] px-5'>
-          <p className='text-[#666666] text-[20px] font-medium'>
-            Brand: <span className='text-[#E94A85]'>MegaMart</span>
+        <div className="lg:w-[41%] w-full">
+          <p className="text-gray-600 text-lg">
+            Brand: <span className="text-[#E94A85] font-medium">{product.brand || "MegaMart"}</span>
           </p>
 
-          <p className='text-3xl font-medium my-2'>
-            Cuddles - Super Pants Pant Style Diaper - M
-          </p>
+          <p className="text-2xl md:text-3xl font-semibold mt-2">{product.title}</p>
 
-          <div className='flex items-center gap-3 mb-3'>
-            <p className='text-[20px] font-semibold'>18$</p>
-            <p className='text-[20px] font-semibold'>10%</p>
+          <div className="flex flex-wrap items-center gap-3 my-3">
+            <p className="text-xl font-semibold">${product.price}</p>
+            {product.discount && <p className="text-xl font-semibold">{product.discount}% Off</p>}
             <p>⭐⭐⭐⭐⭐</p>
-            <p className='text-[#E94A85]'>(1 review)</p>
           </div>
 
-          <p className='mb-3'>🔥 10 products sold here in just 16 hours</p>
+          <p className="mb-2">🔥 {product.sold || 0} products sold recently</p>
 
-          <p className='mb-3'>
-            Quick Max Absorption technology to provide quick absorption and long-lasting
-            dryness. The Diaper pants provide Super Comfort, Super Dryness, and Super
-            Protection to the baby.
-          </p>
+          <p className="mb-3 text-gray-700">{product.description}</p>
 
-          <div className='px-2 bg-[#E6F7E6] w-fit py-1 rounded-[3px] mb-2'>
-            <p className='text-[#00B517] font-medium'>399 in stock</p>
+          <div className="px-3 py-1 bg-green-100 rounded-md w-fit mb-3">
+            <p className="text-green-600 font-medium">{product.stock || 0} in stock</p>
           </div>
 
           {/* Quantity Selector */}
-          <div className='flex items-center gap-4 my-5'>
+          <div className="flex items-center gap-4 my-3">
             <button
               onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              className='w-10 h-10 border border-[#E5E5E5] rounded-md hover:border-[#E94A85] transition-colors'
+              className="w-10 h-10 border rounded-md hover:border-[#E94A85]"
             >
               −
             </button>
+
             <input
               type="number"
               value={quantity}
-              onChange={(e) =>
-                setQuantity(Math.max(1, parseInt(e.target.value) || 1))
-              }
-              className='w-16 h-10 text-center border border-[#E5E5E5] rounded-md'
+              onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+              className="w-16 h-10 border rounded-md text-center"
             />
+
             <button
               onClick={() => setQuantity(quantity + 1)}
-              className='w-10 h-10 border border-[#E5E5E5] rounded-md hover:border-[#E94A85] transition-colors'
+              className="w-10 h-10 border rounded-md hover:border-[#E94A85]"
             >
               +
             </button>
           </div>
 
-          {/* Action Buttons */}
-          <button className='w-full bg-[#E94A85] text-white py-3 rounded-md font-medium text-lg hover:bg-[#d43970] transition-colors mb-3'>
+          {/* Buttons */}
+          <button
+            onClick={handleAddToCart}
+            className="w-full bg-[#E94A85] text-white py-3 rounded-md text-lg hover:bg-[#d43970] mt-2"
+          >
             ADD TO CART
           </button>
-          <button className='w-full bg-black text-white py-3 rounded-md font-medium text-lg hover:bg-[#333] transition-colors mb-5'>
+
+          <button
+            onClick={handleBuyNow}
+            className="w-full bg-black text-white py-3 rounded-md text-lg hover:bg-gray-800 mt-2"
+          >
             BUY NOW
           </button>
 
-          {/* Quick Actions */}
-          <div className='flex gap-4 mb-5'>
-            <button className='flex items-center gap-2 text-[#666]'>
-              <svg
-                className='w-5 h-5'
-                fill='none'
-                stroke='currentColor'
-                viewBox='0 0 24 24'
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth={2}
-                  d='M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'
-                />
-              </svg>
-              COMPARE
-            </button>
-            <button className='flex items-center gap-2 text-[#666]'>
-              <svg
-                className='w-5 h-5'
-                fill='none'
-                stroke='currentColor'
-                viewBox='0 0 24 24'
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth={2}
-                  d='M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z'
-                />
-              </svg>
-              BROWSE WISHLIST
-            </button>
-          </div>
+        </div>
+      </div>
 
-          {/* Viewing Info */}
-          <div className='flex items-center gap-2 mb-4 text-[#666]'>
-            <svg
-              className='w-5 h-5'
-              fill='none'
-              stroke='currentColor'
-              viewBox='0 0 24 24'
-            >
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth={2}
-                d='M15 12a3 3 0 11-6 0 3 3 0 016 0z'
-              />
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth={2}
-                d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z'
-              />
-            </svg>
-            <span className='font-medium'>28</span> people are viewing this right now
-          </div>
+      {/* Features */}
+      <div className="grid grid-cols-1 md:grid-cols-3 bg-[#F3F4FC] mx-3 mt-10 rounded-md text-center">
+        <div className="py-4 flex justify-center items-center gap-2 border-b md:border-b-0 md:border-r">
+          <FaShieldAlt /> <p>101% Original</p>
+        </div>
+        <div className="py-4 flex justify-center items-center gap-2 border-b md:border-b-0 md:border-r">
+          <FaCoins /> <p>Lowest Pricing</p>
+        </div>
+        <div className="py-4 flex justify-center items-center gap-2">
+          <FaTruck /> <p>Free Shipping</p>
         </div>
       </div>
-      <div className='w-[60%] grid grid-cols-3 bg-[#F3F4FC] border-1 mx-3'>
-        <div className='py-3 flex justify-center items-center gap-1 border-r-1'>
-           <FaShieldAlt />
-        <p>101% original</p>
-          
-        </div>
-        <div className='py-3 flex justify-center items-center gap-1 border-r-1'>
-          <FaCoins />
-          <p>lowest pricing</p>
-        </div>
-        <div className='py-3 flex justify-center items-center gap-1'>
-          <FaTruckFast />
-          <p> free shipping </p>
-        </div>
-      </div>
-      
-      <div className='flex justify-center items-center border-1 border-[#E5E5E5] mt-8 mx-3'>
-        <div className='flex justify-center items-center gap-10 text-[22px] font-medium py-3'>
-          <h1 className='hover:cursor-pointer'>Description</h1>
-          <h1 className='hover:cursor-pointer'>Additional Information</h1>
-          <h1 className='hover:cursor-pointer'>Reviews</h1>
-          <h1 className='hover:cursor-pointer'>Shipping & Return</h1>
-        </div>
-      </div>
-      <div className='px-4 py-10 border-1 border-[#E5E5E5] mx-3'>
-        <ProductDescription/>
+
+      {/* Description Section */}
+      <div className="px-4 py-10 border border-[#E5E5E5] mx-3">
+        <ProductDescription />
       </div>
     </div>
   );
 };
 
-export default ProductByid;
+export default ProductById;

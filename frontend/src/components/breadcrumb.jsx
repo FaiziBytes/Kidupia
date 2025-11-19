@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import bgimage from "../images/breadcumb-bkg.jpg";
 
 const BreadcrumbBanner = () => {
+  
   const location = useLocation();
   const pathArray = location.pathname.split("/").filter((item) => item);
   const breadcrumb = pathArray.join(" / ").toUpperCase() || "HOME";

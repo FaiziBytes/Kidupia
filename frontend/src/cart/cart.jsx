@@ -1,11 +1,11 @@
 import React, { useContext, useEffect } from "react";
 import { CartContext } from "../contexts/CartContext";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 export default function CartSideBar({ isOpen, onClose }) {
-  const { cart, fetchCart, removeFromCart } = useContext(CartContext);
+  const { cart, fetchCart, removeFromCart, updateCartItem } = useContext(CartContext);
   const navigate = useNavigate();
+
   useEffect(() => {
     if (isOpen) fetchCart();
   }, [isOpen]);
@@ -15,22 +15,21 @@ export default function CartSideBar({ isOpen, onClose }) {
       {isOpen && <div className="fixed inset-0 z-40" onClick={onClose} />}
       <aside
         className={`fixed top-0 right-0 h-full w-80 bg-white shadow-xl z-50 
-          transform transition-transform duration-300 
-          flex flex-col
+          transform transition-transform duration-300 flex flex-col
           ${isOpen ? "translate-x-0" : "translate-x-full"}`}
       >
+        {/* Header */}
         <div className="flex justify-between p-4 border-b flex-shrink-0">
           <h2 className="text-lg font-semibold">Your Cart</h2>
-          <button onClick={onClose} className="text-xl">
-            ×
-          </button>
+          <button onClick={onClose} className="text-xl">×</button>
         </div>
 
+        {/* Cart items */}
         <div className="p-5 flex-grow overflow-y-auto">
           {!cart?.items?.length ? (
             <p className="text-gray-500 text-center mt-10">Your cart is empty.</p>
           ) : (
-            cart.items.map((item, index) => (
+            cart.items.map((item) => (
               <div key={item._id} className="border-b py-3 flex items-center gap-4">
                 <img
                   src={item.product.images[0] || "https://via.placeholder.com/64"}
@@ -39,8 +38,30 @@ export default function CartSideBar({ isOpen, onClose }) {
                 />
                 <div className="flex-grow min-w-0">
                   <p className="font-medium truncate">{item.product.title}</p>
-                  <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
+
+                  {/* ✅ Quantity Controls */}
+                  <div className="flex items-center gap-2 mt-1">
+                    <button
+                      className="px-2 py-1 bg-gray-200 rounded"
+                      onClick={() =>
+                        updateCartItem(item.product._id, item.quantity - 1)
+                      }
+                    >
+                      -
+                    </button>
+                    <span>{item.quantity}</span>
+                    <button
+                      className="px-2 py-1 bg-gray-200 rounded"
+                      onClick={() =>
+                        updateCartItem(item.product._id, item.quantity + 1)
+                      }
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
+
+                {/* Remove button */}
                 <button
                   onClick={() => removeFromCart(item.product._id)}
                   className="text-red-600 hover:text-red-800 font-semibold whitespace-nowrap ml-2"
@@ -52,6 +73,7 @@ export default function CartSideBar({ isOpen, onClose }) {
           )}
         </div>
 
+        {/* Footer */}
         <div className="border-t p-5 bg-white flex-shrink-0">
           <div className="pb-4">
             <p className="font-semibold text-lg">

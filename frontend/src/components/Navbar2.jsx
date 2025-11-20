@@ -6,10 +6,11 @@ import Topdeals from "../Top-Deals/topdeals";
 import { Link } from "react-router-dom";
 import TodaySaleSidebar from "./today-sale";
 import { MdLocalOffer } from "react-icons/md";
+import { useLocation } from "react-router-dom";
 const Navbar2 = () => {
   const [activeMenu, setActiveMenu] = useState(null);
-  const [selectedMenu, setSelectedMenu] = useState("home"); // 👈 keeps track of which link is active
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+const location = useLocation(); // ✅ use this
   const shopItems = [
     {
       title: "Product Types",
@@ -54,25 +55,19 @@ const Navbar2 = () => {
       <nav className="px-5 py-5 flex items-center justify-between text-[18px] bg-white relative z-0">
         <div className="flex items-center gap-12">
           {/* 🏠 Home */}
-          <Link to="/">
-            <p
-              style={{
-                color: selectedMenu === "home" ? "#E94A85" : "black",
-              }}
-              onClick={() => setSelectedMenu("home")}
-            >
+          <Link to="/"
+           style={{ color: location.pathname === "/" ? "#E94A85" : "black" }}
+          >
+            <p>
               Home
             </p>
           </Link>
 
           {/* 🛒 Shop */}
-          <Link to="/shop">
-            <p
-              style={{
-                color: selectedMenu === "shop" ? "#E94A85" : "black",
-              }}
-              onClick={() => setSelectedMenu("shop")}
-            >
+          <Link to="/shop"
+           style={{ color: location.pathname === "/shop" ? "#E94A85" : "black" }}
+          >
+            <p >
               Shop
             </p>
           </Link>
@@ -189,4 +184,3 @@ const Navbar2 = () => {
 };
 
 export default Navbar2;
-

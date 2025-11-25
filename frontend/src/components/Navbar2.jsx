@@ -11,45 +11,6 @@ const Navbar2 = () => {
   const [activeMenu, setActiveMenu] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 const location = useLocation(); // ✅ use this
-  const shopItems = [
-    {
-      title: "Product Types",
-      items: [
-        "Simple Product",
-        "Grouped Product",
-        "Variable Product",
-        "External/Affiliate Product",
-        "Sale Product",
-        "Upsell Products",
-        "Cross-Sell Product",
-      ],
-    },
-    {
-      title: "WooCommerce Pages",
-      items: [
-        "Shop Page",
-        "Shopping Cart",
-        "Checkout Page",
-        "My account",
-        "Shop Ajax Filter",
-        "Product Category",
-        "Privacy Policy",
-      ],
-    },
-    {
-      title: "Product Features",
-      items: [
-        "Stock Progress Bar",
-        "Color/Image Swatches",
-        "Size Guide Table",
-        "Custom Tab",
-        "Countdown Timer",
-        "Product Video",
-        "Product Brand",
-      ],
-    },
-  ];
-
   return (
     <div className="hidden lg:block relative">
       <nav className="px-5 py-5 flex items-center justify-between text-[18px] bg-white relative z-0">
@@ -75,11 +36,11 @@ const location = useLocation(); // ✅ use this
           {/* 🧭 Categories */}
           <div
             className="flex items-center gap-1 cursor-pointer relative"
-            onMouseEnter={() => setActiveMenu("cat")}
-            onMouseLeave={() => setActiveMenu(null)}
+            // onMouseEnter={() => setActiveMenu("cat")}
+            // onMouseLeave={() => setActiveMenu(null)}
           // onClick={() => setSelectedMenu("categories")}
           >
-            <p     >
+            <p>
               Categories
             </p>
             <div className="bg-[#199588] text-white text-[11px] px-1 rounded-[5px]">

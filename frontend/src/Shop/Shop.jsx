@@ -101,7 +101,7 @@ const Shop = () => {
   return (
     <div>
       <BreadcrumbBanner />
-      <div className="py-12 px-3 flex">
+      <div className="py-12 px-3 flex lg:max-w-screen-2xl mx-auto">
         {/* LEFT FILTERS */}
         <div className="w-[22%]">
           {/* CATEGORY FILTER */}

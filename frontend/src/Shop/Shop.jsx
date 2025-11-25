@@ -6,7 +6,7 @@ import { IoMenu } from "react-icons/io5";
 import { BsGrid3X3Gap } from "react-icons/bs";
 import { CartContext } from "../contexts/CartContext.jsx";
 import { useSearch } from "../contexts/SearchContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Shop = () => {
   const [open, setOpen] = useState(true);
@@ -19,6 +19,7 @@ const Shop = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(12);
   const navigate = useNavigate();
+  const location = useLocation();
   const { addToCart, loadingProducts } = useContext(CartContext);
   const { searchQuery } = useSearch();
 
@@ -44,6 +45,16 @@ const Shop = () => {
     getCategories();
     fetchProducts();
   }, []);
+
+  // Handle category from navbar navigation
+  useEffect(() => {
+    if (location.state?.selectedCategory) {
+      setSelectedCategories([location.state.selectedCategory]);
+      setCurrentPage(1);
+      // Clear the state after using it
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const handleCategoryToggle = (categoryId) => {
     setSelectedCategories((prev) =>
